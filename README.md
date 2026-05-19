@@ -137,6 +137,7 @@ npm run dev
 
 ```bash
 php artisan serve
+npm run dev
 ```
 
 ---

@@ -1,0 +1,6 @@
+{
+  "name": "BTH Catalog",
+  "description": "Product catalog with admin panel. Built with Laravel-style architecture (using Node.js backend for preview) and Vue.js with InertiaJS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

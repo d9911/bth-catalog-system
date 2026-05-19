@@ -1,11 +1,15 @@
+.PHONY: clean-ports
 # ==========================================
 # Балтийский Телекоммуникационный Холдинг
 # Makefile для автоматизации проекта
 # ==========================================
+BACKEND_PORT=8001
+FRONTEND_PORT=5174 #base 5173
 
-# Меняем разделитель команд с TAB на символ ">"
-# Это решает проблему "missing separator" при копировании!
-# .RECIPEPREFIX = >
+
+clean-ports:
+	@echo "Очищаем порты $(BACKEND_PORT) (Backend) и $(FRONTEND_PORT) (Frontend)..."
+	-npx --yes kill-port $(BACKEND_PORT) $(FRONTEND_PORT)
 
 # Подключаем .env файл, если он существует
 ifneq (,$(wildcard ./.env))
