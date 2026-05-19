@@ -1,58 +1,240 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🛍️ BTH Catalog System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Простое веб-приложение — каталог товаров с административной панелью.
 
-## About Laravel
+Проект выполнен в рамках тестового задания для Junior Full-Stack Developer (Laravel + Vue.js + Inertia).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ⚙️ Стек технологий
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Backend
 
-## Learning Laravel
+- Laravel 10+ (RESTful API)
+- Laravel Sanctum (аутентификация)
+- Eloquent ORM
+- PostgreSQL
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Frontend
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Vue.js 3 (Composition API)
+- Inertia.js
+- Tailwind CSS
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 🎯 Функционал
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### 📦 Публичная часть
+
+- Список товаров с пагинацией
+- Просмотр карточки товара
+- Фильтрация по категориям
+- Отображение:
+  - название
+  - категория
+  - цена
+  - описание
+
+---
+
+### 🔐 Административная часть
+
+- Авторизация по токену (Sanctum)
+- CRUD товаров:
+  - создание
+  - редактирование
+  - удаление
+- Управление через отдельный `/admin` интерфейс
+
+---
+
+## 🧱 Основные сущности
+
+### Product
+
+- id
+- name
+- description
+- price
+- category_id
+- timestamps
+
+### Category
+
+- id
+- name
+- description
+- timestamps
+
+Связи:
+
+- Product → belongsTo Category
+- Category → hasMany Products
+
+---
+
+## 🚀 Установка проекта
+
+### 1. Клонировать репозиторий
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone https://github.com/your-username/bth-catalog-system.git
+cd bth-catalog-system
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+### 2. Установка backend зависимостей
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Настройка базы данных (PostgreSQL)
 
-## Security Vulnerabilities
+В `.env`:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=bth_catalog
+DB_USERNAME=postgres
+DB_PASSWORD=your_password
+```
 
-## License
+Создать базу:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+createdb bth_catalog
+```
+
+---
+
+### 4. Миграции и сидеры
+
+```bash
+php artisan migrate --seed
+```
+
+---
+
+### 5. Установка фронтенда
+
+```bash
+npm install
+npm run dev
+```
+
+---
+
+### 6. Запуск сервера
+
+```bash
+php artisan serve
+```
+
+---
+
+## 🔐 Авторизация
+
+Для доступа к административной части:
+
+- `POST /api/login`
+- возвращает Sanctum token
+
+Токен сохраняется в `localStorage` и используется для запросов.
+
+---
+
+## 🎨 UI
+
+- Tailwind CSS используется для быстрой и адаптивной верстки
+- Vue 3 Composition API для логики компонентов
+- Inertia.js для SPA-подобного поведения без отдельного API клиента
+
+---
+
+## 📁 Структура проекта (упрощённо)
+
+```
+app/
+  Http/
+    Controllers/
+    Requests/
+    Resources/
+
+resources/
+  js/
+    Pages/
+    Components/
+    Layouts/
+
+routes/
+  api.php
+  web.php
+```
+
+---
+
+## 🧪 API Endpoints
+
+### Products
+
+- `GET /api/products`
+- `GET /api/products/{id}`
+- `POST /api/products` 🔐
+- `PUT /api/products/{id}` 🔐
+- `DELETE /api/products/{id}` 🔐
+
+### Categories
+
+- `GET /api/categories`
+
+### Auth
+
+- `POST /api/login`
+
+---
+
+## 🧠 Технические решения
+
+- RESTful архитектура
+- Resource/Collection для API ответов
+- Form Request для валидации
+- Sanctum token authentication
+- Eager loading (`with`) для оптимизации запросов
+
+---
+
+## ✨ Бонус (если реализовано)
+
+- Soft Deletes для товаров
+- Seeders с тестовыми данными
+- Docker / docker-compose
+- Composables (useAuth, useProductApi)
+- Подтверждение удаления (modal)
+- Debounce для поиска
+- Базовые тесты API
+
+---
+
+## 📌 Деплой
+
+Проект можно развернуть на:
+
+- Laravel Forge
+- VPS (Nginx + PHP-FPM)
+- Docker (если добавлен)
+
+---
+
+## 📄 Лицензия
+
+Проект распространяется под лицензией MIT.
+См. файл лицензии в корне проекта: [LICENSE](./LICENSE)
