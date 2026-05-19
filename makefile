@@ -3,22 +3,31 @@
 # Makefile для автоматизации проекта
 # ==========================================
 
+# Меняем разделитель команд с TAB на символ ">"
+# Это решает проблему "missing separator" при копировании!
+# .RECIPEPREFIX = >
+
 # Подключаем .env файл, если он существует
 ifneq (,$(wildcard ./.env))
-    include .env
-    export
+	include .env
+	export
 endif
 
-# Цвета для вывода в консоль
-BLUE := \033[36m
-GREEN := \033[32m
-RED := \033[31m
-YELLOW := \033[33m
-NC := \033[0m # No Color
+# Цветное оформление
+COLOR_RESET   := \033[0m
+COLOR_BOLD    := \033[1m
+COLOR_RED     := \033[31m
+COLOR_GREEN   := \033[32m
+COLOR_YELLOW  := \033[33m
+COLOR_BLUE    := \033[34m
+COLOR_MAGENTA := \033[35m
+COLOR_CYAN    := \033[36m
 
-# Имя базы данных из .env (по умолчанию bth_catalog)
+# Настройки БД из .env
 DB_NAME ?= bth_catalog
 DB_USER ?= postgres
+DB_HOST ?= 127.0.0.1
+DB_PORT ?= 5432
 
 .PHONY: help check setup env install db-create db-migrate db dev serve-backend serve-frontend
 
@@ -27,69 +36,69 @@ DB_USER ?= postgres
 # ==========================================
 
 help: ## 📖 Показать список доступных команд
-    @echo "$(BLUE)Доступные команды:$(NC)"
-    @grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "$(GREEN)%-20s$(NC) %s\n", $$1, $$2}'
+	@printf "$(COLOR_CYAN)Доступные команды:$(COLOR_RESET)\n"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "$(COLOR_GREEN)%-20s$(COLOR_RESET) %s\n", $$1, $$2}'
 
 setup: check env install db-create db-migrate ## 🚀 Полная инициализация проекта с нуля
-    @echo "$(GREEN)=========================================$(NC)"
-    @echo "$(GREEN)🎉 Проект успешно инициализирован(NC)"
-    @echo "$(GREEN)=========================================$(NC)"
-    @echo "$(YELLOW)Запустите 'make dev' для старта приложения.$(NC)"
+	@printf "$(COLOR_GREEN)=========================================\n"
+	@printf "$(COLOR_GREEN)🎉 Проект успешно инициализирован!$(COLOR_RESET)\n"
+	@printf "$(COLOR_GREEN)=========================================\n"
+	@printf "$(COLOR_YELLOW)Запустите 'make dev' для старта приложения.$(COLOR_RESET)\n"
 
 dev: ## 💻 Запустить фронтенд и бэкенд (Vite + Artisan)
-    @echo "$(BLUE)Запуск серверов разработки...$(NC)"
-    $(MAKE) serve-backend & $(MAKE) serve-frontend & wait
+	@printf "$(COLOR_MAGENTA)🚀 Запуск серверов разработки...$(COLOR_RESET)\n"
+	$(MAKE) serve-backend & $(MAKE) serve-frontend & wait
 
 # ==========================================
 # Проверка зависимостей
 # ==========================================
 
 check: ## 🔍 Проверить наличие необходимых утилит (PHP, Node, psql)
-    @echo "$(BLUE)Проверка зависимостей...$(NC)"
-    @which php > /dev/null || (echo "$(RED)❌ PHP не установлен$(NC)"; exit 1)
-    @echo "$(GREEN)✅ PHP: $$(php -v | head -n 1)$(NC)"
-    @which composer > /dev/null || (echo "$(RED)❌ Composer не установлен$(NC)"; exit 1)
-    @echo "$(GREEN)✅ Composer найден$(NC)"
-    @which node > /dev/null || (echo "$(RED)❌ Node.js не установлен$(NC)"; exit 1)
-    @echo "$(GREEN)✅ Node.js: $$(node -v)$(NC)"
-    @which npm > /dev/null || (echo "$(RED)❌ npm не установлен$(NC)"; exit 1)
-    @echo "$(GREEN)✅ npm: $$(npm -v)$(NC)"
-    @which psql > /dev/null || (echo "$(RED)❌ psql (PostgreSQL) не установлен$(NC)"; exit 1)
-    @echo "$(GREEN)✅ PostgreSQL клиент найден$(NC)"
+	@printf "$(COLOR_CYAN)🔍 Проверка зависимостей...$(COLOR_RESET)\n"
+	@which php > /dev/null 2>&1 || (printf "$(COLOR_RED)❌ PHP не установлен$(COLOR_RESET)\n"; exit 1)
+	@printf "$(COLOR_GREEN)✅ PHP: $$(php -v | head -n 1)$(COLOR_RESET)\n"
+	@which composer > /dev/null 2>&1 || (printf "$(COLOR_RED)❌ Composer не установлен$(COLOR_RESET)\n"; exit 1)
+	@printf "$(COLOR_GREEN)✅ Composer найден$(COLOR_RESET)\n"
+	@command -v node > /dev/null 2>&1 || (printf "$(COLOR_RED)❌ Node.js не установлен$(COLOR_RESET)\n"; exit 1)
+	@printf "$(COLOR_GREEN)✅ Node.js: $$(node -v)$(COLOR_RESET)\n"
+	@command -v npm > /dev/null 2>&1 || (printf "$(COLOR_RED)❌ npm не установлен$(COLOR_RESET)\n"; exit 1)
+	@printf "$(COLOR_GREEN)✅ npm: $$(npm -v)$(COLOR_RESET)\n"
+	@command -v psql > /dev/null 2>&1 || (printf "$(COLOR_RED)❌ psql (PostgreSQL) не установлен или не в PATH$(COLOR_RESET)\n"; exit 1)
+	@printf "$(COLOR_GREEN)✅ PostgreSQL клиент найден$(COLOR_RESET)\n"
 
 # ==========================================
 # Настройка окружения и зависимостей
 # ==========================================
 
 env: ## 📝 Создать .env файл из .env.example, если его нет
-    @if [ ! -f .env ]; then \
-        echo "$(BLUE)Копирование .env.example -> .env$(NC)"; \
-        cp .env.example .env; \
-    else \
-        echo "$(YELLOW).env файл уже существует$(NC)"; \
-    fi
+	@if [ ! -f .env ]; then \
+		printf "$(COLOR_BLUE)📝 Копирование .env.example -	.env$(COLOR_RESET)\n"; \
+		cp .env.example .env; \
+	else \
+		printf "$(COLOR_YELLOW)⚠️ .env файл уже существует$(COLOR_RESET)\n"; \
+	fi
 
 install: ## 📦 Установить зависимости Composer и NPM
-    @echo "$(BLUE)Установка PHP зависимостей...$(NC)"
-    composer install
-    @echo "$(BLUE)Установка Node.js зависимостей...$(NC)"
-    npm install
-    @echo "$(BLUE)Генерация ключа приложения...$(NC)"
-    php artisan key:generate
+	@printf "$(COLOR_BLUE)📦 Установка PHP зависимостей...$(COLOR_RESET)\n"
+	composer install
+	@printf "$(COLOR_BLUE)📦 Установка Node.js зависимостей...$(COLOR_RESET)\n"
+	npm install
+	@printf "$(COLOR_BLUE)🔑 Генерация ключа приложения...$(COLOR_RESET)\n"
+	php artisan key:generate
 
 # ==========================================
 # Работа с базой данных
 # ==========================================
 
 db-create: ## 🗄️ Создать базу данных PostgreSQL (если не существует)
-    @echo "$(BLUE)Попытка создания базы данных '$(DB_NAME)'...$(NC)"
-    @PGPASSWORD=$(DB_PASSWORD) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -tc "SELECT 1 FROM pg_database WHERE datname = '$(DB_NAME)'" | grep -q 1 || \
-    PGPASSWORD=$(DB_PASSWORD) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -c "CREATE DATABASE $(DB_NAME)"
-    @echo "$(GREEN)✅ База данных '$(DB_NAME)' готова$(NC)"
+	@printf "$(COLOR_CYAN)🗄️ Попытка создания базы данных '$(DB_NAME)'...$(COLOR_RESET)\n"
+	@PGPASSWORD=$(DB_PASSWORD) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -tc "SELECT 1 FROM pg_database WHERE datname = '$(DB_NAME)'" | grep -q 1 || \
+	PGPASSWORD=$(DB_PASSWORD) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -c "CREATE DATABASE $(DB_NAME)"
+	@printf "$(COLOR_GREEN)✅ База данных '$(DB_NAME)' готова$(COLOR_RESET)\n"
 
 db-migrate: ## 🚀 Накатить миграции и сиды (migrate:fresh --seed)
-    @echo "$(BLUE)Миграции и сидирование...$(NC)"
-    php artisan migrate:fresh --seed
+	@printf "$(COLOR_CYAN)🚀 Миграции и сидирование...$(COLOR_RESET)\n"
+	php artisan migrate:fresh --seed
 
 db: db-create db-migrate ## 🗄️ Пересоздать БД, накатить миграции и сиды
 
@@ -98,12 +107,9 @@ db: db-create db-migrate ## 🗄️ Пересоздать БД, накатит�
 # ==========================================
 
 serve-backend: ## 🔧 Запустить только бэкенд (php artisan serve)
-    @echo "$(BLUE)Запуск Laravel... http://localhost:8000$(NC)"
-    php artisan serve
+	@printf "$(COLOR_BLUE)🔧 Запуск Laravel... http://localhost:8000$(COLOR_RESET)\n"
+	php artisan serve
 
 serve-frontend: ## 🎨 Запустить только фронтенд (npm run dev)
-    @echo "$(BLUE)Запуск Vite...$(NC)"
-    npm run dev
-
-
-# цветное оформление https://gist.github.com/vratiu/9780109
+	@printf "$(COLOR_MAGENTA)🎨 Запуск Vite...$(COLOR_RESET)\n"
+	npm run dev
