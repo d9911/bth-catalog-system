@@ -1,22 +1,33 @@
-import tailwindcss from '@tailwindcss/vite';
-import vue from '@vitejs/plugin-vue';
-import path from 'path';
-import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite'
+import vue from '@vitejs/plugin-vue'
+import path from 'path'
+import laravel from 'laravel-vite-plugin'
+import { defineConfig } from 'vite'
 
-export default defineConfig(() => {
-  return {
-    plugins: [
-      vue(),
-      tailwindcss()
-    ],
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, './resources/js'),
+export default defineConfig({
+  plugins: [
+    laravel({
+      input: ['resources/css/app.css', 'resources/js/app.js'],
+      refresh: true,
+    }),
+    tailwindcss(),
+    vue({
+      template: {
+        transformAssetUrls: {
+          base: null,
+          includeAbsolute: false,
+        },
       },
+    }),
+  ],
+  server: {
+    watch: {
+      ignored: ['**/storage/framework/views/**', 'node_modules/**'],
     },
-    server: {
-      hmr: process.env.DISABLE_HMR !== 'true',
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
+  },
+  resolve: {
+    alias: {
+      '@': '/resources/js',
     },
-  };
-});
+  },
+})

@@ -7,15 +7,26 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@bth.com',
-            'password' => bcrypt('password')
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@bth.com'],
+            [
+                'name' => 'Admin',
+                'password' => bcrypt('password')
+            ]
+        );
         Category::insert([
             ['name' => 'Роутеры', 'description' => 'Сетевое оборудование', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Коммутаторы', 'description' => 'Оборудование для локальных сетей', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Оптика', 'description' => 'Оптоволоконное оборудование', 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        // Create sample products for each category
+        \App\Models\Product::factory()->count(5)->create();
+        \App\Models\Product::factory()->count(5)->create([
+            'category_id' => 2
+        ]);
+        \App\Models\Product::factory()->count(5)->create([
+            'category_id' => 3
         ]);
     }
 }

@@ -3,19 +3,19 @@
 # Балтийский Телекоммуникационный Холдинг
 # Makefile для автоматизации проекта
 # ==========================================
+
 BACKEND_PORT=8001
 FRONTEND_PORT=5174 #base 5173
-
-
-clean-ports:
-	@echo "Очищаем порты $(BACKEND_PORT) (Backend) и $(FRONTEND_PORT) (Frontend)..."
-	-npx --yes kill-port $(BACKEND_PORT) $(FRONTEND_PORT)
 
 # Подключаем .env файл, если он существует
 ifneq (,$(wildcard ./.env))
 	include .env
 	export
 endif
+
+clean-ports:
+	@echo "Очищаем порты $(BACKEND_PORT) (Backend) и $(FRONTEND_PORT) (Frontend)..."
+	-npx --yes kill-port $(BACKEND_PORT) $(FRONTEND_PORT) 5173 8000 5175
 
 # Цветное оформление
 COLOR_RESET   := \033[0m
@@ -111,9 +111,9 @@ db: db-create db-migrate ## 🗄️ Пересоздать БД, накатит�
 # ==========================================
 
 serve-backend: ## 🔧 Запустить только бэкенд (php artisan serve)
-	@printf "$(COLOR_BLUE)🔧 Запуск Laravel... http://localhost:8000$(COLOR_RESET)\n"
-	php artisan serve
+	@printf "$(COLOR_BLUE)🔧 Запуск Laravel... http://localhost:$(BACKEND_PORT)$(COLOR_RESET)\n"
+	php artisan serve --port=$(BACKEND_PORT)
 
 serve-frontend: ## 🎨 Запустить только фронтенд (npm run dev)
 	@printf "$(COLOR_MAGENTA)🎨 Запуск Vite...$(COLOR_RESET)\n"
-	npm run dev
+	npx vite --port $(FRONTEND_PORT)

@@ -1,12 +1,8 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
 Route::get('/', function () {
-    return view('app');
+    // 'Index' — это название твоего Vue-компонента в папке resources/js/Pages/Index.vue
+    return Inertia::render('Index');
 });
-
-// use Inertia\Inertia;
-
-// Route::get('/', function () {
-//     // 'Index' — это название твоего Vue-компонента в папке resources/js/Pages/Index.vue
-//     return Inertia::render('Index');
-// });
