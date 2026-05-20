@@ -14,19 +14,19 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('password')
             ]
         );
-        Category::insert([
-            ['name' => 'Роутеры', 'description' => 'Сетевое оборудование', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Коммутаторы', 'description' => 'Оборудование для локальных сетей', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Оптика', 'description' => 'Оптоволоконное оборудование', 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        // Create categories using factory
+        Category::factory()->count(3)->create();
+
+        // Get category IDs for product assignment
+        $categories = Category::all()->pluck('id')->toArray();
 
         // Create sample products for each category
         \App\Models\Product::factory()->count(5)->create();
         \App\Models\Product::factory()->count(5)->create([
-            'category_id' => 2
+            'category_id' => $categories[1] ?? 2
         ]);
         \App\Models\Product::factory()->count(5)->create([
-            'category_id' => 3
+            'category_id' => $categories[2] ?? 3
         ]);
     }
 }
