@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
-import Layout from '../../../Layout.vue'
 import axios from 'axios'
 import { CheckSquare, AlertTriangle } from 'lucide-vue-next'
+import Layout from '../../Layout.vue'
 
 const form = ref({
   name: '',

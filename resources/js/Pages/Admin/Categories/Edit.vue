@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
-import Layout from '../../../Layout.vue'
 import axios from 'axios'
 import { Save, X, ArrowLeft } from 'lucide-vue-next'
+import Layout from '../../Layout.vue'
 
 const props = defineProps({
   id: String,
